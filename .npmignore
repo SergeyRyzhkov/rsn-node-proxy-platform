@@ -1,0 +1,32 @@
+# dependencies
+node_modules
+# logs
+npm-debug.log
+# src
+src
+# debug
+debug
+# config
+config
+# mail
+mail
+static
+log
+/.vscode
+package-lock.json
+.npmrc
+assets
+test
+examples
+.eslintrc*
+.babelrc
+.gitignore
+.github/
+tslint*
+tsconfig*
+webpack*
+dist*
+/NpmPublish.js
+/NpmPublish.d.ts
+
+
