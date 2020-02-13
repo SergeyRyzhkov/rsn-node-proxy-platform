@@ -1,0 +1,8 @@
+
+PUT http://localhost:3002/api/2_0/platform/proxy/request HTTP/1.1
+content-type: application/json
+
+{
+    "url": "https://pkk5.rosreestr.ru",
+    "maxParallelProxiesCount": 25
+}

@@ -6,10 +6,11 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "declaration": true,
-    "sourceMap": true,
+    "declarationDir": "./npm/types",
     "rootDir": "src",
-    "outDir": "lib",
+    "outDir": "./npm/lib",
     "baseUrl": ".",
+    "sourceMap": true,
     "paths": {
       "@/*": [
         "src/*"

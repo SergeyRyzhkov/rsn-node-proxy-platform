@@ -1,8 +1,9 @@
 import * as ProxyLists from 'proxy-lists'
 import { ProxyItem } from '@/entities/ProxyItem';
-import TypeOrmManager from 'rsn-express-core/utils/TypeOrmManager';
-import BaseService from 'rsn-express-core/services/BaseService';
-import ClassTransform from 'rsn-express-core/utils/ClassTransform';
+import { TypeOrmManager, ClassTransform } from 'rsn-express-core';
+import { BaseService } from 'rsn-express-core';
+import { getSpysMeProxies, getFreeProxyCzProxies } from '@/CustomProxySource';
+
 
 export default class ProxyListService extends BaseService {
 
@@ -10,16 +11,27 @@ export default class ProxyListService extends BaseService {
   public geyProxiesFromSource (options?: any) {
     const mergedOptions = { ...defaultProxyListsOptions, ...options };
 
-    return new Promise((resolve) => {
+    return new Promise(async (resolve) => {
       let proxyList = []
+
+      const proxies = await getSpysMeProxies();
+      proxyList = [...proxyList, ...proxies];
+
+      const pr2 = await getFreeProxyCzProxies();
+      proxyList = [...proxyList, ...pr2];
+
+      // resolve(proxyList);
+
       ProxyLists.getProxies(mergedOptions)
         .on('data', async (proxies) => {
-          proxyList = [...proxyList, ...proxies];
+          if (!!proxies) {
+            proxyList = [...proxyList, ...proxies];
+          }
         })
-        .on('error', (err) => {
-          const erreee = err;
-        })
-        .once('end', async () => {
+        .once('end', async (proxies) => {
+          if (!!proxies) {
+            proxyList = [...proxyList, ...proxies];
+          }
           resolve(proxyList);
         });
     })
@@ -27,6 +39,16 @@ export default class ProxyListService extends BaseService {
 
   public async getProxies () {
     const dbResult: [] = await this.getDbViewResult('proxy_list') as [];
+    return ClassTransform.plainArrayToClassInstanceArray(dbResult, ProxyItem);
+  }
+
+  public async geValidProxies () {
+    const dbResult: [] = await this.getDbViewResult('proxy_list where proxy_list_response_time is not null order by proxy_list_response_time desc') as [];
+    return ClassTransform.plainArrayToClassInstanceArray(dbResult, ProxyItem);
+  }
+
+  public async getRandomValidProxy (count = 20) {
+    const dbResult: [] = await this.getDbViewResult(`proxy_list where proxy_list_response_time is not null order by random() limit ${count}`) as [];
     return ClassTransform.plainArrayToClassInstanceArray(dbResult, ProxyItem);
   }
 
@@ -50,6 +72,11 @@ export default class ProxyListService extends BaseService {
     return this.execNone('DELETE FROM proxy_list WHERE proxy_list_response_time IS NULL')
   }
 
+  public deleteDuplacate () {
+    const sql = "delete from brc_ekoset.proxy_list l  where l.proxy_list_id not in (select min(sl.proxy_list_id) from brc_ekoset.proxy_list sl group by sl.proxy_list_ip_address,sl.proxy_list_port )";
+    return this.execNone(sql);
+  }
+
   public deleteAll () {
     return this.execNone('DELETE FROM proxy_list')
   }
@@ -61,10 +88,7 @@ export default class ProxyListService extends BaseService {
     item.proxyListIpAddress = proxy.ipAddress;
     item.proxyListPort = proxy.port;
     item.proxyListSource = proxy.source;
-    if (!!proxy.protocols && proxy.protocols.length > 0) {
-      const protocols = [...proxy.protocols, proxy.protocols[0]];
-      item.proxyListProtocol = protocols.join();
-    }
+    item.proxyProtocol = !!proxy.protocols && proxy.protocols.length > 0 ? proxy.protocols[0] : 'http';
     return item;
   }
 
@@ -78,7 +102,7 @@ const defaultProxyListsOptions = {
           'strict' mode will only allow proxies that have the 'anonymityLevel' property equal to 'elite'; ie. proxies that are missing the 'anonymityLevel' property will be excluded.
           'loose' mode will allow proxies that have the 'anonymityLevel' property of 'elite' as well as those that are missing the 'anonymityLevel' property.
   */
-  filterMode: "strict",
+  filterMode: "loose",
 
   /*
       Options to pass to puppeteer when creating a new browser instance.
@@ -116,14 +140,15 @@ const defaultProxyListsOptions = {
       To get all proxies, regardless of protocol, set this option to NULL.
   */
   protocols: ['http', 'https'],
-
+  // protocols: ['http', 'https'],
+  // protocols: null,
   /*
       Anonymity level.
 
       To get all proxies, regardless of anonymity level, set this option to NULL.
   */
   anonymityLevels: ['anonymous', 'elite'],
-
+  // anonymityLevels: null,
   /*
       Include proxy sources by name.
 

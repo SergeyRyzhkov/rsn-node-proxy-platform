@@ -43,7 +43,7 @@ export class ProxyItem {
     nullable: true,
     name: 'proxy_list_protocol'
   })
-  public proxyListProtocol: string;
+  public proxyProtocol: string;
 
 
   @Column('text', {

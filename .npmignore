@@ -26,7 +26,7 @@ tslint*
 tsconfig*
 webpack*
 dist*
+npm
 /NpmPublish.js
 /NpmPublish.d.ts
-
 

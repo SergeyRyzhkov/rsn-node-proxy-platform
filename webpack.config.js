@@ -7,8 +7,7 @@ const paths = {
   src: path.resolve(__dirname, 'src'),
   debug: path.resolve(__dirname, 'debug'),
   dist: path.resolve(__dirname, 'dist'),
-  lib: path.resolve(__dirname, 'lib'),
-  types: path.resolve(__dirname, 'lib')
+  npm: path.resolve(__dirname, 'npm')
 };
 const entryFileName = path.join(paths.src, "main.ts");
 const outProductionBundleFileName = 'index.js';
@@ -18,10 +17,9 @@ const outDevBundleFileName = 'index.dev.js';
 class RsnCleanBeforBuildWebpackPlugin {
   apply(compiler) {
     compiler.hooks.beforeRun.tap('RsnCleanBeforBuildWebpackPlugin', () => {
-      this.remodeFolder(paths.types);
       this.remodeFolder(paths.dist);
       this.remodeFolder(paths.debug);
-      this.remodeFolder(paths.lib);
+      this.remodeFolder(paths.npm);
     });
   }
 
@@ -71,7 +69,7 @@ let config = {
   },
 
   mode: nodeEnv,
-  devtool: ifDevelopment('cheap-module-source-map', false),
+  devtool: ifDevelopment('cheap-module-source-map', '#source-map'),
   target: 'node',
   externals: [NodeExternals()],
 
@@ -80,7 +78,7 @@ let config = {
     // removeAvailableModules: false,
     // removeEmptyChunks: false,
     // splitChunks: false
-    usedExports: true
+    // usedExports: true
   },
 
   module: {

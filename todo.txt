@@ -1,0 +1,11 @@
+args: [
+    '--proxy-server=socks5://127.0.0.1:9050'
+    '--ignore-certificate-errors',
+    '--ignore-certificate-errors-spki-list '
+]
+
+https://github.com/gajus/puppeteer-proxy
+
+Get http://api.ipify.org/
+
+  
