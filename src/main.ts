@@ -14,7 +14,7 @@ import { ProxyController } from './controllers/ProxyController';
 
   app.addOrmEntityModelMetadata(entities);
   app.addAppControllers(controllers);
-  app.initialize();
+  await app.initialize();
 
   if (process.argv.some((iter) => iter === 'server')) {
     app.start();
