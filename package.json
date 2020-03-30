@@ -29,7 +29,6 @@
     "@types/passport-jwt": "latest",
     "@types/passport-local": "latest",
     "@types/proxy-lists": "^1.14.0",
-    "@types/request-promise": "^4.1.45",
     "cross-env": "^7.0.0",
     "eslint": "latest",
     "fork-ts-checker-webpack-plugin": "^4.0.4",
