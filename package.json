@@ -44,7 +44,7 @@
   },
   "dependencies": {
     "@sindresorhus/slugify": "^0.10.1",
-    "bcrypt": "3.0.6",
+    "bcrypt": "5.0.0",
     "body-parser": "latest",
     "camelcase-keys": "^6.1.2",
     "class-transformer": "latest",
